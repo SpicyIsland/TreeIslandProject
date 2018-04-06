@@ -1,0 +1,104 @@
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        MapInfo mapInfo = new MapInfo(this);
+        mapInfo.onStartGame(0);
+    }
+}
+
+
+
+public class MapInfo{
+    private AppCompatActivity mMain = null;
+    CreateMap createMap;
+    TextView textView;
+    ImageButton imageButton1, imageButton2;
+
+    public MapInfo(AppCompatActivity main){
+        mMain = main;
+        CreateMap createMap = new CreateMap();
+        TextView textView = (TextView) main.findViewById(R.id.textView);
+        ImageButton imageButton1 = (ImageButton) main.findViewById(R.id.imageButton1);
+        ImageButton imageButton2 = (ImageButton) main.findViewById(R.id.imageButton2);
+        this.textView = textView;
+        this.createMap = createMap;
+        this.imageButton1 = imageButton1;
+        this.imageButton2 = imageButton2;
+    }
+
+    //ゲーム開始時の操作、実際はRealmから位置情報を取得してメインアクティビティに反映させます。
+    public void onGameStart(int position){
+        createMap.createTown();
+    }
+
+    public class OnClickTownButton implements View.OnClickListener{
+        public void onClick(View view){
+            createMap.createTown();
+        }
+    }
+
+    public class OnClickBossRoomButton implements View.OnClickListener{
+        public void onClick(View view) {
+            createMap.createBossRoom();
+        }
+    }
+
+    public class OnClickInnButton implements View.OnClickListener{
+        public void onClick(View view){
+            createMap.createInn();
+        }
+    }
+
+    public class OnClickDungeonButton implements View.OnClickListener{
+        public void onClick(View view) {
+            createMap.createDungeon();
+        }
+    }
+
+    public class CreateMap{
+        public void createTown(){
+            OnClickDungeonButton onClickDungeonButton = new OnClickDungeonButton();
+            imageButton1.setOnClickListener(onClickDungeonButton);
+            OnClickInnButton onClickInnButton = new OnClickInnButton();
+            imageButton2.setOnClickListener(onClickInnButton);
+            textView.setText("ここは町です");
+        }
+
+        public void createDungeon(){
+            OnClickBossRoomButton onClickBossRoomButton = new OnClickBossRoomButton();
+            imageButton1.setOnClickListener(onClickBossRoomButton);
+            OnClickTownButton onClickTownButton = new OnClickTownButton();
+            imageButton2.setOnClickListener(onClickTownButton);
+            textView.setText("ここはダンジョンです");
+        }
+
+        public void createInn(){
+            OnClickTownButton onClickTownButton = new OnClickTownButton();
+            imageButton1.setOnClickListener(onClickTownButton);
+            imageButton2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TextView textView = (TextView) mMain.findViewById(R.id.textView);
+                    textView.setText("宿泊機能は未実装です");
+                }
+            });
+            textView.setText("ここは宿です");
+        }
+
+        public void createBossRoom(){
+            imageButton1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TextView textView = (TextView) mMain.findViewById(R.id.textView);
+                    textView.setText("ボスは未実装です");
+                }
+            });
+            OnClickDungeonButton onClickDungeonButton = new OnClickDungeonButton();
+            imageButton2.setOnClickListener(onClickDungeonButton);
+            textView.setText("ここはボス部屋です");
+        }
+    }
+}
