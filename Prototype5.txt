@@ -1,0 +1,133 @@
+public class MainActivity extends AppCompatActivity{
+    Realm realm;
+    MapInfo mapInfo;
+    PlayerInfo playerInfo;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        realm = Realm.getDefaultInstance();
+        mapInfo = new MapInfo(this, this);
+        mapInfo.onGameStart();
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        realm.close();
+    }
+}
+
+public class MapInfo{
+    private static final String POSITION = "POSITION";
+    Realm realm;
+    private AppCompatActivity mMain;
+    private Context mContext;
+    TextView textView;
+    ImageButton imageButton1, imageButton2;
+    int position;
+
+    public MapInfo(AppCompatActivity main, Context context) {
+        mMain = main;
+        mContext = context;
+        textView = (TextView) main.findViewById(R.id.textView);
+        imageButton1 = (ImageButton) main.findViewById(R.id.imageButton1);
+        imageButton2 = (ImageButton) main.findViewById(R.id.imageButton2);
+    }
+
+    //ゲーム開始時の操作,位置情報を取得してメインアクティビティに反映させます。
+    public void onGameStart() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        position = sharedPreferences.getInt(POSITION, 0);
+
+        switch (position){
+            case 0:
+                createInn();
+                break;
+            case 1:
+                createTown();
+                break;
+            case 2:
+                createDungeon();
+                break;
+            case 3:
+                createBossRoom();
+                break;
+        }
+    }
+
+    public void saveData(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(POSITION, position);
+        editor.commit();
+    }
+
+    public class OnClickTownButton implements View.OnClickListener{
+        public void onClick(View view){
+            createTown();
+        }
+    }
+
+    public class OnClickBossRoomButton implements View.OnClickListener{
+        public void onClick(View view) {
+            createBossRoom();
+        }
+    }
+
+    public class OnClickInnButton implements View.OnClickListener{
+        public void onClick(View view){
+            createInn();
+        }
+    }
+
+    public class OnClickDungeonButton implements View.OnClickListener{
+        public void onClick(View view) {
+            createDungeon();
+        }
+    }
+
+    public void createTown(){
+        OnClickDungeonButton onClickDungeonButton = new OnClickDungeonButton();
+        imageButton1.setOnClickListener(onClickDungeonButton);
+        OnClickInnButton onClickInnButton = new OnClickInnButton();
+        imageButton2.setOnClickListener(onClickInnButton);
+        textView.setText("ここは街です");
+        position = 1;
+        saveData();
+    }
+
+    public void createDungeon(){
+        OnClickBossRoomButton onClickBossRoomButton = new OnClickBossRoomButton();
+        imageButton1.setOnClickListener(onClickBossRoomButton);
+        OnClickTownButton onClickTownButton = new OnClickTownButton();
+        imageButton2.setOnClickListener(onClickTownButton);
+        textView.setText("ここはダンジョンです");
+        position = 2;
+        saveData();
+    }
+
+    public void createInn(){
+        OnClickTownButton onClickTownButton = new OnClickTownButton();
+        imageButton1.setOnClickListener(onClickTownButton);
+        imageButton2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {TextView textView = (TextView) mMain.findViewById(R.id.textView);textView.setText("宿泊機能は未実装です");}
+            });
+        textView.setText("ここは宿です");
+        position = 0;
+        saveData();
+    }
+
+    public void createBossRoom(){
+        imageButton1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {TextView textView = (TextView) mMain.findViewById(R.id.textView);textView.setText("ボスは未実装です");}
+            });
+        OnClickDungeonButton onClickDungeonButton = new OnClickDungeonButton();
+        imageButton2.setOnClickListener(onClickDungeonButton);
+        textView.setText("ここはボス部屋です");
+        position = 3;
+        saveData();
+    }
+}
